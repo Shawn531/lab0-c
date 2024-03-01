@@ -260,23 +260,31 @@ int q_ascend(struct list_head *head)
         return 0;
     struct list_head *current = head->next;
     struct list_head *next = current->next;
-    struct list_head *temp = current;
+    struct list_head *temp = current->prev;
+    bool flag = 0;
     int len = q_size(head);
     while (next != head) {
         while (next != head) {
             element_t *current_e = list_entry(current, element_t, list);
             element_t *next_e = list_entry(next, element_t, list);
-            temp = current;
-            if (strcmp(current_e->value, next_e->value) >= 0) {
+            temp = current->prev;
+            if (strcmp(current_e->value, next_e->value) > 0) {
                 list_del(current);
                 q_release_element(current_e);
                 len--;
+                flag = 1;
                 break;
             }
             next = next->next;
         }
-        current = temp->next;
-        next = current->next;
+        if (flag) {
+            current = temp->next;
+            next = current->next;
+        } else {
+            current = current->next;
+            next = current->next;
+        }
+        flag = 0;
     }
     return len;
 }
@@ -286,7 +294,37 @@ int q_ascend(struct list_head *head)
 int q_descend(struct list_head *head)
 {
     // https://leetcode.com/problems/remove-nodes-from-linked-list/
-    return 0;
+    if (head == NULL || head->next == head)
+        return 0;
+    struct list_head *current = head->next;
+    struct list_head *next = current->next;
+    struct list_head *temp = current->prev;
+    bool flag = 0;
+    int len = q_size(head);
+    while (next != head) {
+        while (next != head) {
+            element_t *current_e = list_entry(current, element_t, list);
+            element_t *next_e = list_entry(next, element_t, list);
+            temp = current->prev;
+            if (strcmp(current_e->value, next_e->value) < 0) {
+                list_del(current);
+                q_release_element(current_e);
+                len--;
+                flag = 1;
+                break;
+            }
+            next = next->next;
+        }
+        if (flag) {
+            current = temp->next;
+            next = current->next;
+        } else {
+            current = current->next;
+            next = current->next;
+        }
+        flag = 0;
+    }
+    return len;
 }
 
 /* Merge all the queues into one sorted queue, which is in ascending/descending
