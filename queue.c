@@ -260,16 +260,22 @@ int q_ascend(struct list_head *head)
         return 0;
     struct list_head *current = head->next;
     struct list_head *next = current->next;
+    struct list_head *temp = current;
     int len = q_size(head);
-    while (current != head || next != head) {
-        element_t *current_e = list_entry(current, element_t, list);
-        element_t *next_e = list_entry(next, element_t, list);
-        if (strcmp(current_e->value, next_e->value) == 1) {
-            list_del(next);
-            q_release_element(next_e);
-            len--;
+    while (next != head) {
+        while (next != head) {
+            element_t *current_e = list_entry(current, element_t, list);
+            element_t *next_e = list_entry(next, element_t, list);
+            temp = current;
+            if (strcmp(current_e->value, next_e->value) >= 0) {
+                list_del(current);
+                q_release_element(current_e);
+                len--;
+                break;
+            }
+            next = next->next;
         }
-        current = current->next;
+        current = temp->next;
         next = current->next;
     }
     return len;
