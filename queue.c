@@ -69,7 +69,7 @@ bool q_insert_tail(struct list_head *head, char *s)
 element_t *q_remove_head(struct list_head *head, char *sp, size_t bufsize)
 {
     // check
-    if (!head)
+    if (head == NULL || head->next == head)
         return NULL;
     // list_first_entry
     element_t *node = list_first_entry(head, element_t, list);
@@ -90,7 +90,7 @@ element_t *q_remove_head(struct list_head *head, char *sp, size_t bufsize)
 element_t *q_remove_tail(struct list_head *head, char *sp, size_t bufsize)
 {
     // check
-    if (!head)
+    if (head == NULL || head->next == head)
         return NULL;
     // list_first_entry
     element_t *node = list_last_entry(head, element_t, list);
@@ -124,7 +124,7 @@ int q_size(struct list_head *head)
 bool q_delete_mid(struct list_head *head)
 {
     // https://leetcode.com/problems/delete-the-middle-node-of-a-linked-list/
-    if (!head)
+    if (head == NULL || head->next == head)
         return false;
     int len = q_size(head);
     struct list_head *prt = head->next;
@@ -143,7 +143,7 @@ bool q_delete_mid(struct list_head *head)
 bool q_delete_dup(struct list_head *head)
 {
     // https://leetcode.com/problems/remove-duplicates-from-sorted-list-ii/
-    if (!head)
+    if (head == NULL || head->next == head)
         return 0;
     struct list_head *pivot = head->next;
     bool flag = 0;
@@ -177,7 +177,7 @@ bool q_delete_dup(struct list_head *head)
 void q_swap(struct list_head *head)
 {
     // https://leetcode.com/problems/swap-nodes-in-pairs/
-    if (!head)
+    if (head == NULL || head->next == head)
         return;
     struct list_head *node = head->next;
     while (node != head && node->next != head) {
@@ -228,7 +228,7 @@ void q_reverseK(struct list_head *head, int k)
 /* Sort elements of queue in ascending/descending order */
 void q_sort(struct list_head *head, bool descend)
 {
-    if (!head)
+    if (head == NULL || head->next == head)
         return;
     struct list_head *current = head->next;
     struct list_head *next = current->next;
@@ -256,7 +256,7 @@ void q_sort(struct list_head *head, bool descend)
 int q_ascend(struct list_head *head)
 {
     // https://leetcode.com/problems/remove-nodes-from-linked-list/
-    if (!head)
+    if (head == NULL || head->next == head)
         return 0;
     struct list_head *current = head->next;
     struct list_head *next = current->next;
