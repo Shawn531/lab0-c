@@ -226,14 +226,53 @@ void q_reverseK(struct list_head *head, int k)
 }
 
 /* Sort elements of queue in ascending/descending order */
-void q_sort(struct list_head *head, bool descend) {}
+void q_sort(struct list_head *head, bool descend)
+{
+    if (!head)
+        return;
+    struct list_head *current = head->next;
+    struct list_head *next = current->next;
+    struct list_head *judge = head;
+    while (next != judge) {
+        while (next != judge) {
+            element_t *current_e = list_entry(current, element_t, list);
+            element_t *next_e = list_entry(next, element_t, list);
+            struct list_head *next_tmp = next->next;
+            if ((descend && strcmp(current_e->value, next_e->value) == -1) ||
+                (!descend && strcmp(current_e->value, next_e->value) == 1)) {
+                list_move(current, next);
+            }
+            current = next_tmp->prev;
+            next = next_tmp;
+        }
+        judge = judge->prev;
+        current = head->next;
+        next = current->next;
+    }
+}
 
 /* Remove every node which has a node with a strictly less value anywhere to
  * the right side of it */
 int q_ascend(struct list_head *head)
 {
     // https://leetcode.com/problems/remove-nodes-from-linked-list/
-    return 0;
+    if (!head)
+        return 0;
+    struct list_head *current = head->next;
+    struct list_head *next = current->next;
+    int len = q_size(head);
+    while (current != head || next != head) {
+        element_t *current_e = list_entry(current, element_t, list);
+        element_t *next_e = list_entry(next, element_t, list);
+        if (strcmp(current_e->value, next_e->value) == 1) {
+            list_del(next);
+            q_release_element(next_e);
+            len--;
+        }
+        current = current->next;
+        next = current->next;
+    }
+    return len;
 }
 
 /* Remove every node which has a node with a strictly greater value anywhere to
