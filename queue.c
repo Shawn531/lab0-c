@@ -146,20 +146,29 @@ bool q_delete_dup(struct list_head *head)
     if (!head)
         return 0;
     struct list_head *pivot = head->next;
+    bool flag = 0;
     while (pivot != head) {
+        element_t *pivot_e = list_entry(pivot, element_t, list);
         struct list_head *current = pivot->next;
         while (current != head) {
-            element_t *pivot_e = list_entry(pivot, element_t, list);
+            pivot_e = list_entry(pivot, element_t, list);
             element_t *current_e = list_entry(current, element_t, list);
             struct list_head *next = current->next;
             if (strcmp(pivot_e->value, current_e->value) == 0) {
                 list_del(current);
                 q_release_element(current_e);
+                flag = 1;
             } else
                 break;
             current = next;
         }
         pivot = pivot->next;
+        if (flag) {
+            list_del(pivot->prev);
+            q_release_element(pivot_e);
+            flag = 0;
+        }
+
     }
     return 1;
 }
