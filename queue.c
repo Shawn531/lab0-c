@@ -242,25 +242,21 @@ void merge(struct list_head *a_head,
         element_t *a_e = list_entry(a_head->next, element_t, list);
         element_t *b_e = list_entry(b_head->next, element_t, list);
         if (descend) {
-            if (strcmp(a_e->value, b_e->value) >= 0) {
+            if (strcmp(a_e->value, b_e->value) >= 0)
                 list_move_tail(a_head->next, c_head);
-            } else {
+            else
                 list_move_tail(b_head->next, c_head);
-            }
         } else {
-            if (strcmp(a_e->value, b_e->value) <= 0) {
+            if (strcmp(a_e->value, b_e->value) <= 0)
                 list_move_tail(a_head->next, c_head);
-            } else {
+            else
                 list_move_tail(b_head->next, c_head);
-            }
         }
     }
-    if (a_head->next == a_head) {
-        list_splice_tail(b_head, c_head);
-    }
-    if (b_head->next == b_head) {
+    if (a_head->next != a_head)
         list_splice_tail(a_head, c_head);
-    }
+    if (b_head->next != b_head)
+        list_splice_tail(b_head, c_head);
 }
 
 struct list_head *midPoint(struct list_head *head)
