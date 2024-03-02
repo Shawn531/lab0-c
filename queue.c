@@ -263,13 +263,12 @@ void merge(struct list_head *a_head,
     }
 }
 
-
 struct list_head *midPoint(struct list_head *head)
 {
     struct list_head *slow = head->next;
     struct list_head *fast = head->next->next;
 
-    while (fast != NULL && fast->next != head) {
+    while (fast != head && fast->next != head) {
         slow = slow->next;
         fast = fast->next->next;
     }
@@ -288,7 +287,7 @@ void q_sort(struct list_head *head, bool descend)
     // Split head into a_head and b_head
     struct list_head *mid = midPoint(head);
     list_cut_position(&a_head, head, mid);
-    list_splice(head, &b_head);
+    list_splice_init(head, &b_head);
 
     // Recursive
     q_sort(&a_head, descend);
