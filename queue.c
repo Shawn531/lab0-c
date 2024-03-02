@@ -225,30 +225,75 @@ void q_reverseK(struct list_head *head, int k)
     }
 }
 
+/* Merge two linked list without head*/
+void merge(struct list_head *a_head,
+           struct list_head *b_head,
+           struct list_head *c_head,
+           bool descend)
+{
+    // Recursive
+    // Base case
+    if (a_head == NULL || a_head->next == a_head)
+        return;
+    if (b_head == NULL || b_head->next == b_head)
+        return;
+    // Recursive case
+    while (a_head->next != a_head && b_head->next != b_head) {
+        element_t *a_e = list_entry(a_head->next, element_t, list);
+        element_t *b_e = list_entry(b_head->next, element_t, list);
+        if (descend) {
+            if (strcmp(a_e->value, b_e->value) >= 0) {
+                list_move_tail(a_head->next, c_head);
+            } else {
+                list_move_tail(b_head->next, c_head);
+            }
+        } else {
+            if (strcmp(a_e->value, b_e->value) <= 0) {
+                list_move_tail(a_head->next, c_head);
+            } else {
+                list_move_tail(b_head->next, c_head);
+            }
+        }
+    }
+    if (a_head->next == a_head) {
+        list_splice_tail(b_head, c_head);
+    }
+    if (b_head->next == b_head) {
+        list_splice_tail(a_head, c_head);
+    }
+}
+
+
+struct list_head *midPoint(struct list_head *head)
+{
+    struct list_head *slow = head->next;
+    struct list_head *fast = head->next->next;
+
+    while (fast != NULL && fast->next != head) {
+        slow = slow->next;
+        fast = fast->next->next;
+    }
+    return slow;
+}
+
 /* Sort elements of queue in ascending/descending order */
 void q_sort(struct list_head *head, bool descend)
 {
-    if (head == NULL || head->next == head)
+    // merged sort Base case
+    if (head == NULL || head->next == head || head->next->next == head)
         return;
-    struct list_head *current = head->next;
-    struct list_head *next = current->next;
-    struct list_head *judge = head;
-    while (next != judge) {
-        while (next != judge) {
-            element_t *current_e = list_entry(current, element_t, list);
-            element_t *next_e = list_entry(next, element_t, list);
-            struct list_head *next_tmp = next->next;
-            if ((descend && strcmp(current_e->value, next_e->value) == -1) ||
-                (!descend && strcmp(current_e->value, next_e->value) == 1)) {
-                list_move(current, next);
-            }
-            current = next_tmp->prev;
-            next = next_tmp;
-        }
-        judge = judge->prev;
-        current = head->next;
-        next = current->next;
-    }
+    LIST_HEAD(a_head);
+    LIST_HEAD(b_head);
+
+    // Split head into a_head and b_head
+    struct list_head *mid = midPoint(head);
+    list_cut_position(&a_head, head, mid);
+    list_splice(head, &b_head);
+
+    // Recursive
+    q_sort(&a_head, descend);
+    q_sort(&b_head, descend);
+    merge(&a_head, &b_head, head, descend);
 }
 
 /* Remove every node which has a node with a strictly less value anywhere to
