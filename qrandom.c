@@ -12,8 +12,11 @@ int qrandombytes(uint8_t *dest, const size_t len)
     } else if (qrandom_impl == 1) {
         xoshiro_bytes(dest, len);
         return 0;
-    } else {
+    } else if (qrandom_impl == 2) {
         xoshiross_bytes(dest, len);
+        return 0;
+    } else {
+        xorshift128p_bytes(dest, len);
         return 0;
     }
 }

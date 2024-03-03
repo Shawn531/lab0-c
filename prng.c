@@ -52,6 +52,14 @@ void xoshiro_seed(const uint64_t seed)
         s[i] = splitmix64();
 }
 
+void xorshift128_seed(const uint64_t seed)
+{
+    seeded = true;
+    splitmix64_seed(seed);
+    for (int i = 0; i < 2; i++)
+        s[i] = splitmix64();
+}
+
 uint64_t xoshiro(void)
 {
     if (!seeded)
@@ -86,8 +94,8 @@ void xoshiro_bytes(uint8_t *dest, const size_t len)
 
 uint64_t xoshiro256ss()
 {
-    // if (!seeded)
-    xoshiro_seed(0);
+    if (!seeded)
+        xoshiro_seed(0);
 
     uint64_t const result = rotl(s[1] * 5, 7) * 9;
     uint64_t const t = s[1] << 17;
@@ -113,6 +121,36 @@ void xoshiross_bytes(uint8_t *dest, const size_t len)
 
     if (len % 8) {
         tmp = xoshiro256ss();
+        memcpy(&dest[len - (len % 8)], &tmp, len % 8);
+    }
+}
+
+/* xorshift128p */
+uint64_t xorshift128p()
+{
+    if (!seeded) {
+        xorshift128_seed(0);
+    }
+    uint64_t sp = s[0];
+    uint64_t const t = s[1];
+    s[0] = t;
+    sp ^= sp << 23;  // a
+    sp ^= sp >> 18;  // b -- Again, the shifts and the multipliers are tunable
+    sp ^= t ^ (t >> 5);  // c
+    s[1] = sp;
+    return sp + t;
+}
+
+void xorshift128p_bytes(uint8_t *dest, const size_t len)
+{
+    uint64_t tmp;
+    for (size_t i = 0; i < len - (len % 8); i += 8) {
+        tmp = xorshift128p();
+        memcpy(&dest[i], &tmp, 8);
+    }
+
+    if (len % 8) {
+        tmp = xorshift128p();
         memcpy(&dest[len - (len % 8)], &tmp, len % 8);
     }
 }
