@@ -68,32 +68,42 @@ bool q_insert_tail(struct list_head *head, char *s)
 /* Remove an element from head of queue */
 element_t *q_remove_head(struct list_head *head, char *sp, size_t bufsize)
 {
+    // check
     if (head == NULL || head->next == head)
         return NULL;
+    // list_first_entry
     element_t *node = list_first_entry(head, element_t, list);
     if (node == NULL)
         return NULL;
+    // list_del
     list_del(&node->list);
-    if (sp) {
-        strncpy(sp, node->value, bufsize - 1);
-        sp[bufsize - 1] = '\0';
-    }
+    // move to sp
+    if (sp == NULL || bufsize == 0)
+        return NULL;
+    // sp = node->value;
+    strncpy(sp, node->value, bufsize - 1);
+    sp[bufsize - 1] = '\0';
     return node;
 }
 
 /* Remove an element from tail of queue */
 element_t *q_remove_tail(struct list_head *head, char *sp, size_t bufsize)
 {
+    // check
     if (head == NULL || head->next == head)
         return NULL;
+    // list_first_entry
     element_t *node = list_last_entry(head, element_t, list);
     if (node == NULL)
         return NULL;
+    // list_del
     list_del(&node->list);
-    if (sp) {
-        strncpy(sp, node->value, bufsize - 1);
-        sp[bufsize - 1] = '\0';
-    }
+    // move to sp
+    if (sp == NULL || bufsize == 0)
+        return NULL;
+    // sp = node->value;
+    strncpy(sp, node->value, bufsize - 1);
+    sp[bufsize - 1] = '\0';
     return node;
 }
 
@@ -375,3 +385,27 @@ int q_merge(struct list_head *head, bool descend)
     q_sort(q_contex->q, descend);
     return q_contex->size;
 }
+
+/* Shuffle based on Fisher-Yates shuffle */
+// void q_shuffle(struct list_head *head)
+// {
+//     if (head == NULL || head->next == head || head->next->next == head)
+//         return;
+//     srand(time(NULL));
+//     int len = q_size(head);
+//     while (len > 0) {
+//         int random = rand() % len;
+//         struct list_head *old = head->next;
+//         int count = 0;
+//         while(count < random) {
+//             old = old->next;
+//             count++;
+//         }
+//         struct list_head *new = head->prev;
+//         if(new != old){
+//             list_move(new, old);
+//             list_move_tail(old, head);
+//         }
+//         len--;
+//     }
+// }
