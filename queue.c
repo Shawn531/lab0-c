@@ -391,7 +391,6 @@ int q_merge(struct list_head *head, bool descend)
 // {
 //     if (head == NULL || head->next == head || head->next->next == head)
 //         return;
-//     srand(time(NULL));
 //     int len = q_size(head);
 //     while (len > 0) {
 //         int random = rand() % len;
