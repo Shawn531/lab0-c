@@ -21,7 +21,10 @@
 
 #include "dudect/fixture.h"
 #include "list.h"
+#include "prng.h"
+#include "qrandom.h"
 #include "random.h"
+
 
 /* Shannon entropy */
 extern double shannon_entropy(const uint8_t *input_data);
@@ -172,7 +175,7 @@ static void fill_rand_string(char *buf, size_t buf_size)
     while (len < MIN_RANDSTR_LEN)
         len = rand() % buf_size;
 
-    randombytes((uint8_t *) buf, len);
+    qrandombytes((uint8_t *) buf, len);
     for (size_t n = 0; n < len; n++)
         buf[n] = charset[buf[n] % (sizeof(charset) - 1)];
     buf[len] = '\0';
@@ -1089,6 +1092,10 @@ static void console_init()
               "Number of times allow queue operations to return false", NULL);
     add_param("descend", &descend,
               "Sort and merge queue in ascending/descending order", NULL);
+    add_param(
+        "random", &qrandom_impl,
+        "Which random number generator to use (0: Linux kernel, 1: xoshiro)",
+        NULL);
 }
 
 /* Signal handlers */
@@ -1210,6 +1217,20 @@ uintptr_t os_random(uintptr_t seed)
     return x;
 }
 
+#define RANDOM_BYTES 1048576
+static void generate_randombytes(void)
+{
+    uint8_t *buf = malloc(RANDOM_BYTES);
+    if (!buf)
+        exit(1);
+
+    do {
+        qrandombytes(buf, RANDOM_BYTES);
+    } while (fwrite(buf, RANDOM_BYTES, 1, stdout));
+
+    exit(0);
+}
+
 #define BUFSIZE 256
 int main(int argc, char *argv[])
 {
@@ -1225,7 +1246,12 @@ int main(int argc, char *argv[])
     int level = 4;
     int c;
 
-    while ((c = getopt(argc, argv, "hv:f:l:")) != -1) {
+    while ((c = getopt(argc, argv, "hv:f:l:r:")) != -1) {
+        /* A better seed can be obtained by combining getpid() and its parent ID
+         * with the Unix time.
+         */
+        srand(os_random(getpid() ^ getppid()));
+        xoshiro_seed(os_random(getpid() ^ getppid()));
         switch (c) {
         case 'h':
             usage(argv[0]);
@@ -1250,6 +1276,16 @@ int main(int argc, char *argv[])
             buf[BUFSIZE - 1] = '\0';
             logfile_name = lbuf;
             break;
+        case 'r':
+            char *endptr;
+            errno = 0;
+            qrandom_impl = strtol(optarg, &endptr, 10);
+            if (errno != 0 || endptr == optarg) {
+                fprintf(stderr, "Invalid random number generator\n");
+                exit(EXIT_FAILURE);
+            }
+            generate_randombytes();
+            break;
         default:
             printf("Unknown option '%c'\n", c);
             usage(argv[0]);
@@ -1257,10 +1293,7 @@ int main(int argc, char *argv[])
         }
     }
 
-    /* A better seed can be obtained by combining getpid() and its parent ID
-     * with the Unix time.
-     */
-    srand(os_random(getpid() ^ getppid()));
+
 
     q_init();
     init_cmd();
