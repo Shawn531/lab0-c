@@ -1251,7 +1251,9 @@ int main(int argc, char *argv[])
          * with the Unix time.
          */
         srand(os_random(getpid() ^ getppid()));
-        xoshiro_seed(os_random(getpid() ^ getppid()));
+        s4_seed(os_random(getpid() ^ getppid()));
+        s2_seed(os_random(getpid() ^ getppid()));
+        s_seed(os_random(getpid() ^ getppid()));
         switch (c) {
         case 'h':
             usage(argv[0]);
