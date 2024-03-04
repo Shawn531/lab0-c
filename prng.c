@@ -1,6 +1,7 @@
 /*
  *  Written by David Blackman and Sebastiano Vigna (vigna@acm.org)
  *  Modified by Yan-Jie Wang (yanjiewtw@gmail.com)
+ *  Modified by Shwan-Wu (N26124395@gs.ncku.edu.tw)
  *
  *  To the extent possible under law, the author has dedicated all copyright
  *  and related and neighboring rights to this software to the public domain
