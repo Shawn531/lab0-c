@@ -25,6 +25,7 @@
 #include "prng.h"
 #include "qrandom.h"
 #include "random.h"
+#include "shuffle.h"
 
 
 /* Shannon entropy */
@@ -938,33 +939,33 @@ static bool do_merge(int argc, char *argv[])
     return ok && !error_check();
 }
 
-// bool do_shuffle(int argc, char *argv[])
-// {
-//     if (argc != 1) {
-//         report(1, "%s takes no arguments", argv[0]);
-//         return false;
-//     }
+bool do_shuffle(int argc, char *argv[])
+{
+    if (argc != 1) {
+        report(1, "%s takes no arguments", argv[0]);
+        return false;
+    }
 
-//     int cnt = 0;
-//     if (!current || !current->q)
-//         report(3, "Warning: Calling shuffle on null queue");
-//     else
-//         cnt = q_size(current->q);
-//     error_check();
+    int cnt = 0;
+    if (!current || !current->q)
+        report(3, "Warning: Calling shuffle on null queue");
+    else
+        cnt = q_size(current->q);
+    error_check();
 
-//     if (cnt < 2)
-//         report(3, "Warning: Calling shuffle on single node");
-//     error_check();
+    if (cnt < 2)
+        report(3, "Warning: Calling shuffle on single node");
+    error_check();
 
-//     set_noallocate_mode(true);
-//     if (current && exception_setup(true))
-//         q_shuffle(current->q);
-//     exception_cancel();
-//     set_noallocate_mode(false);
+    set_noallocate_mode(true);
+    if (current && exception_setup(true))
+        q_shuffle(current->q);
+    exception_cancel();
+    set_noallocate_mode(false);
 
-//     q_show(3);
-//     return !error_check();
-// }
+    q_show(3);
+    return !error_check();
+}
 
 static bool is_circular()
 {
@@ -1136,7 +1137,7 @@ static void console_init()
     ADD_COMMAND(list_sort,
                 "Use list_sort in Linux to sort the queue in ascending order",
                 "");
-    // ADD_COMMAND(shuffle, "Shuffle queue based on Fisher-Yates shuffle", "");
+    ADD_COMMAND(shuffle, "Shuffle queue based on Fisher-Yates shuffle", "");
     ADD_COMMAND(ascend,
                 "Remove every node which has a node with a strictly less "
                 "value anywhere to the right side of it",
