@@ -19,13 +19,13 @@
 #include <time.h>
 #endif
 
+#include "addop.h"
 #include "dudect/fixture.h"
 #include "list.h"
 #include "list_sort.h"
 #include "prng.h"
 #include "qrandom.h"
 #include "random.h"
-#include "shuffle.h"
 
 
 /* Shannon entropy */
