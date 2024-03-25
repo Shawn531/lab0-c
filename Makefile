@@ -41,7 +41,7 @@ $(GIT_HOOKS):
 OBJS := qtest.o report.o console.o harness.o queue.o \
         random.o dudect/constant.o dudect/fixture.o dudect/ttest.o \
         shannon_entropy.o \
-        linenoise.o web.o qrandom.o prng.o list_sort.o addop.o timsort.o
+        linenoise.o web.o qrandom.o prng.o list_sort.o addop.o timsort.o log2fix.o
 
 OBJS_WITHOUT_QTEST := $(filter-out qtest.o,$(OBJS))
 
@@ -56,6 +56,10 @@ sort_test: sort_test.o $(OBJS_WITHOUT_QTEST)
 	$(Q)$(CC) $(LDFLAGS) -o $@ $^ -lm
 
 qsort_test: qsort_test.o $(OBJS_WITHOUT_QTEST)
+	$(VECHO) "  LD\t$@\n"
+	$(Q)$(CC) $(LDFLAGS) -o $@ $^ -lm
+
+log2_test: log2_test.o $(OBJS_WITHOUT_QTEST)
 	$(VECHO) "  LD\t$@\n"
 	$(Q)$(CC) $(LDFLAGS) -o $@ $^ -lm
 
@@ -90,6 +94,9 @@ clean:
 	rm -rf .$(DUT_DIR)
 	rm -rf *.dSYM
 	(cd traces; rm -f *~)
+
+cleancsv:
+	rm -rf *.csv
 
 distclean: clean
 	rm -f .cmd_history
