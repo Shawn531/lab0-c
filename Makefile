@@ -3,6 +3,7 @@ CFLAGS = -O1 -g -Wall -Werror -Idudect -I.
 
 # Emit a warning should any variable-length array be found within the code.
 CFLAGS += -Wvla
+# CFLAGS = -std=c99
 
 GIT_HOOKS := .git/hooks/applied
 DUT_DIR := dudect
@@ -40,11 +41,21 @@ $(GIT_HOOKS):
 OBJS := qtest.o report.o console.o harness.o queue.o \
         random.o dudect/constant.o dudect/fixture.o dudect/ttest.o \
         shannon_entropy.o \
-        linenoise.o web.o qrandom.o prng.o list_sort.o addop.o
+        linenoise.o web.o qrandom.o prng.o list_sort.o addop.o timsort.o
+
+OBJS_WITHOUT_QTEST := $(filter-out qtest.o,$(OBJS))
 
 deps := $(OBJS:%.o=.%.o.d)
 
 qtest: $(OBJS)
+	$(VECHO) "  LD\t$@\n"
+	$(Q)$(CC) $(LDFLAGS) -o $@ $^ -lm
+
+sort_test: sort_test.o $(OBJS_WITHOUT_QTEST)
+	$(VECHO) "  LD\t$@\n"
+	$(Q)$(CC) $(LDFLAGS) -o $@ $^ -lm
+
+qsort_test: qsort_test.o $(OBJS_WITHOUT_QTEST)
 	$(VECHO) "  LD\t$@\n"
 	$(Q)$(CC) $(LDFLAGS) -o $@ $^ -lm
 

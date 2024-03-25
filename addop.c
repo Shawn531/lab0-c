@@ -3,6 +3,7 @@
 #include <string.h>
 
 #include "addop.h"
+#include "list.h"
 #include "queue.h"
 /* Shuffle based on Fisher-Yates shuffle */
 void q_shuffle(struct list_head *head)
